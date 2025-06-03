@@ -1,0 +1,13 @@
+# 已安装的包列表
+# 安装时间: 2025-06-04 01:48:41.108962
+
+pandas
+numpy
+matplotlib
+seaborn
+scipy
+xgboost
+lightgbm
+optuna
+catboost
+tensorflow
