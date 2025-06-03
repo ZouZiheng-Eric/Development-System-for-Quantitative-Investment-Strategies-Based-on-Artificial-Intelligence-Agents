@@ -68,9 +68,6 @@ final_project/
 ```bash
 # 确保Python版本 >= 3.7
 python --version
-
-# 克隆或下载项目到本地
-cd final_project
 ```
 
 ### 2. 一键启动
