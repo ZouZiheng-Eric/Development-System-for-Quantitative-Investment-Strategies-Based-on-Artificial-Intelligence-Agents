@@ -59,33 +59,26 @@ def check_basic_requirements():
     
     return missing
 
-def option_install_dependencies():
-    """选项1：安装依赖包"""
-    print("\n🔧 开始检查和安装依赖包...")
+def install_dependencies():
+    """安装依赖包"""
+    print("🔧 正在安装依赖包...")
     try:
-        # 使用subprocess执行安装脚本，避免编码问题
-        import subprocess
-        
-        # 设置环境变量处理编码
-        env = os.environ.copy()
-        env['PYTHONIOENCODING'] = 'utf-8'
-        
-        result = subprocess.run([sys.executable, 'final_project/install_dependencies.py'], 
-                              env=env,
-                              encoding='utf-8',
-                              errors='ignore')
+        result = subprocess.run([sys.executable, 'install_dependencies.py'],
+                              capture_output=True, text=True)
         
         if result.returncode == 0:
-            print("✅ 依赖包安装脚本执行完成")
+            print("✅ 依赖包安装完成")
+            return True
         else:
-            print("⚠️ 安装脚本执行可能遇到问题，但已尝试处理")
+            print("❌ 依赖包安装失败")
+            print("错误信息:")
+            print(result.stderr)
+            print("💡 尝试手动执行: python install_dependencies.py")
+            return False
             
-    except FileNotFoundError:
-        print("❌ 安装脚本不存在")
-        print("请手动安装: pip install pandas numpy scikit-learn matplotlib seaborn")
     except Exception as e:
         print(f"❌ 安装过程出错: {e}")
-        print("💡 尝试手动执行: python final_project/install_dependencies.py")
+        return False
 
 def option_run_full_system():
     """选项2：运行完整系统"""
@@ -105,13 +98,23 @@ def option_run_full_system():
         env = os.environ.copy()
         env['PYTHONIOENCODING'] = 'utf-8'
         
-        result = subprocess.run([sys.executable, 'final_project/run_module3.py'], 
+        result = subprocess.run([sys.executable, 'run_module3.py'], 
                               env=env,
                               encoding='utf-8',
                               errors='ignore')
         
         if result.returncode == 0:
             print("✅ 模块三系统执行完成")
+            print("\n📋 系统运行完成！")
+            print("\n📂 结果文件:")
+            print("   1. 查看运行日志了解详细过程")
+            print("   2. 检查生成的模型和报告文件") 
+            print("   3. 查看目录下的输出文件")
+            
+            print("\n💼 文件说明:")
+            print("   • 模型文件: 各种机器学习模型")
+            print("   • 报告文件: 性能分析和评估结果")
+            print("   • 生成的文件保存在目录下")
         else:
             print("⚠️ 系统执行可能遇到问题，请检查日志")
             
@@ -119,7 +122,7 @@ def option_run_full_system():
         print("❌ 主程序文件不存在")
     except Exception as e:
         print(f"❌ 运行过程出错: {e}")
-        print("💡 尝试手动执行: python final_project/run_module3.py")
+        print("💡 尝试手动执行: python run_module3.py")
 
 def option_model_selection_only():
     """选项3：仅运行模型选择"""
@@ -131,7 +134,7 @@ def option_model_selection_only():
         return
     
     try:
-        sys.path.insert(0, 'final_project/models')
+        sys.path.insert(0, 'models')
         from intelligent_model_selection import demo_run
         demo_run()
     except ImportError as e:
@@ -149,7 +152,7 @@ def option_ensemble_only():
         return
     
     try:
-        sys.path.insert(0, 'final_project/models')
+        sys.path.insert(0, 'models')
         from ensemble_models import demo_ensemble
         demo_ensemble()
     except ImportError as e:
@@ -196,10 +199,10 @@ def option_show_instructions():
 def create_project_structure():
     """创建项目目录结构"""
     directories = [
-        'final_project/models',
-        'final_project/results',
-        'final_project/reports',
-        'final_project/logs'
+        'models',
+        'results',
+        'reports',
+        'logs'
     ]
     
     for directory in directories:
@@ -231,7 +234,7 @@ def main():
             choice = input("请输入选项号码 (1-6): ").strip()
             
             if choice == '1':
-                option_install_dependencies()
+                install_dependencies()
             elif choice == '2':
                 option_run_full_system()
             elif choice == '3':

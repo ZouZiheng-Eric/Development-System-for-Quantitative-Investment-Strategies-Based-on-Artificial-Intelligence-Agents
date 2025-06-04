@@ -29,7 +29,7 @@ if sys.platform == "win32":
 def setup_logging():
     """设置日志配置，解决编码问题"""
     # 确保目录存在
-    os.makedirs('final_project/logs', exist_ok=True)
+    os.makedirs('logs', exist_ok=True)
     
     # 清除之前的logging配置
     for handler in logging.root.handlers[:]:
@@ -37,14 +37,14 @@ def setup_logging():
     
     # 创建自定义的文件处理器，强制使用UTF-8编码
     file_handler = logging.FileHandler(
-        'final_project/logs/module3_run.log', 
+        'logs/module3_run.log', 
         mode='w',  # 覆盖模式，避免追加乱码
         encoding='utf-8'
     )
     file_handler.setLevel(logging.INFO)
     
     # 创建控制台处理器
-    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     
     # 设置格式
@@ -123,10 +123,10 @@ def check_and_install_packages():
 def create_directories():
     """创建必要的目录结构"""
     directories = [
-        'final_project/models',
-        'final_project/results',
-        'final_project/reports', 
-        'final_project/logs'
+        'models',
+        'results',
+        'reports', 
+        'logs'
     ]
     
     for directory in directories:
@@ -283,7 +283,7 @@ def generate_simple_report(base_results, ensemble_result):
     
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_path = f'final_project/reports/模块三简化报告_{timestamp}.txt'
+        report_path = f'reports/模块三简化报告_{timestamp}.txt'
         
         # 使用UTF-8编码写入文件
         with open(report_path, 'w', encoding='utf-8') as f:
@@ -396,7 +396,7 @@ def main():
         print(f"\n🏆 推荐模型: {best_model}")
         
         print(f"\n📁 输出文件:")
-        print(f"   - 运行日志: final_project/logs/module3_run.log")
+        print(f"   - 运行日志: logs/module3_run.log")
         if report_path:
             print(f"   - 详细报告: {report_path}")
         

@@ -1,4 +1,4 @@
- #!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 模型评估框架
@@ -30,7 +30,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('final_project/logs/model_evaluation.log'),
+        logging.FileHandler('logs/model_evaluation.log'),
         logging.StreamHandler()
     ]
 )
@@ -420,7 +420,7 @@ class ModelEvaluationReport:
     def __init__(self):
         self.report_data = {}
     
-    def generate_comprehensive_report(self, model_results, save_path='final_project/reports/'):
+    def generate_comprehensive_report(self, model_results, save_path='reports/'):
         """
         生成综合评估报告
         

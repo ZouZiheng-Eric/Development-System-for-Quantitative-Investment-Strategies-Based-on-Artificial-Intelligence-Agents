@@ -67,7 +67,7 @@ python start.py
 
 运行后生成的文件结构：
 ```
-final_project/
+project/
 ├── results/          # 模型结果和预测
 ├── reports/          # HTML/PDF报告
 ├── logs/            # 运行日志

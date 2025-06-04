@@ -662,7 +662,7 @@ def run_multi_factor_20_strategy(data_path, combination_methods=None):
 
 def main():
     """主函数"""
-    data_path = 'code_1/300638_2024.pkl'
+    data_path = 'data/data_202410.pkl'
     
     try:
         results = run_multi_factor_20_strategy(data_path)

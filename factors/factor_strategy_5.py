@@ -171,7 +171,7 @@ class Performance:
 
 def main():
     """主函数"""
-    data_path = 'code_1/300638_2024.pkl'
+    data_path = 'data/data_202410.pkl'
     
     data_handler = DataHandler(data_path)
     data_handler.calculate_cci_factor()

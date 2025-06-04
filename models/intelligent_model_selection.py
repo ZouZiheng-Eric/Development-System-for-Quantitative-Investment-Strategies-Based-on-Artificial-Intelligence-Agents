@@ -1,4 +1,4 @@
- #!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 智能模型选择系统
@@ -75,15 +75,15 @@ import json
 from scipy import stats
 
 # 确保目录存在
-os.makedirs('final_project/logs', exist_ok=True)
-os.makedirs('final_project/results', exist_ok=True)
+os.makedirs('logs', exist_ok=True)
+os.makedirs('results', exist_ok=True)
 
 # 配置日志 - 修复编码问题
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('final_project/logs/model_selection.log', encoding='utf-8'),
+        logging.FileHandler('logs/model_selection.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -754,7 +754,7 @@ class IntelligentModelSelection:
         """保存结果到文件"""
         if filename is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f'final_project/results/model_selection_results_{timestamp}.pkl'
+            filename = f'results/model_selection_results_{timestamp}.pkl'
         
         try:
             with open(filename, 'wb') as f:

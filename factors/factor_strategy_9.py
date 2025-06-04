@@ -54,8 +54,8 @@ class DataHandler:
         low_vol = (self.data['Volatility_Rank'] < 0.2).astype(int)
         self.data['Low_Vol_Persistence'] = low_vol.rolling(window=5).sum()
         
-        # GARCH效应：高波动率后的均值回归
-        self.data['Vol_Mean_Reversion'] = -np.tanh(self.data['Volatility_Z_Score'])
+        # GARCH效应：高波动率后的均值回归 (修复：直接使用Z分数，高波动率时为正值)
+        self.data['Vol_Mean_Reversion'] = np.tanh(self.data['Volatility_Z_Score'])
         
         # 波动率突破
         self.data['Vol_Breakout'] = np.where(
@@ -63,25 +63,22 @@ class DataHandler:
             np.where(self.data['Volatility_Ratio'] < 0.7, -1, 0)
         )
         
-        # 价格动量计算
-        price_momentum = self.data['Close'].pct_change(5)
+        # 价格动量计算 (修复：存储到data中)
+        self.data['Price_Momentum'] = self.data['Close'].pct_change(5)
         
         # 波动率与收益率关系
         self.data['Vol_Return_Correlation'] = self.data['returns'].rolling(window=20).corr(self.data['Volatility_Short'])
         
-        # 综合波动率因子
-        # 低波动率看多（波动率均值回归），高波动率看空
+        # 综合波动率因子 (修复：简化逻辑，低波动率看多，高波动率看空)
         self.data['Volatility_Factor'] = (
-            -0.4 * self.data['Vol_Mean_Reversion'] +  # 波动率均值回归
-            -0.3 * (self.data['Volatility_Rank'] - 0.5) * 2 +  # 波动率水平（反向）
-            0.2 * np.sign(self.data['Vol_Breakout']) * np.sign(price_momentum) +  # 波动率突破配合价格动量
-            -0.1 * np.tanh(self.data['Volatility_Trend'])  # 波动率趋势（反向）
+            -0.5 * self.data['Vol_Mean_Reversion'] +  # 高波动率看空（均值回归）
+            -0.3 * (self.data['Volatility_Rank'] - 0.5) +  # 波动率水平（高波动看空）
+            0.2 * np.sign(self.data['Vol_Breakout']) * np.sign(self.data['Price_Momentum']).fillna(0)  # 波动率突破配合价格动量
         )
         
-        # 波动率环境调整
-        # 在低波动率环境中，因子效应更强
-        vol_environment = 1 + 0.5 * (0.5 - self.data['Volatility_Rank'])
-        self.data['Volatility_Factor'] = self.data['Volatility_Factor'] * vol_environment
+        # 标准化因子值到[-1, 1]区间
+        factor_std = self.data['Volatility_Factor'].rolling(window=60).std()
+        self.data['Volatility_Factor'] = np.tanh(self.data['Volatility_Factor'] / (factor_std + 1e-8))
 
 class VolatilityStrategy:
     """历史波动率策略"""
@@ -92,23 +89,25 @@ class VolatilityStrategy:
         
     def generate_signals(self):
         """生成交易信号"""
-        # 基于波动率因子生成信号
+        # 修复：简化信号生成逻辑，使其更容易触发
         conditions = [
-            (self.data['Volatility_Factor'] > self.threshold) & 
-            (self.data['Volatility_Rank'] < 0.3) & 
-            (self.data['Low_Vol_Persistence'] >= 2),  # 低波动率持续，看多
-            
+            # 强烈看多：低波动率环境 + 因子值为正
             (self.data['Volatility_Factor'] > 0.3) & 
-            (self.data['Vol_Mean_Reversion'] > 0.3),  # 波动率均值回归信号
+            (self.data['Volatility_Rank'] < 0.4),
             
-            (self.data['Volatility_Factor'] < -self.threshold) & 
-            (self.data['Volatility_Rank'] > 0.7) & 
-            (self.data['High_Vol_Persistence'] >= 2),  # 高波动率持续，看空
+            # 温和看多：因子值适中正值
+            (self.data['Volatility_Factor'] > 0.1) & 
+            (self.data['Volatility_Factor'] <= 0.3),
             
+            # 强烈看空：高波动率环境 + 因子值为负  
             (self.data['Volatility_Factor'] < -0.3) & 
-            (self.data['Volatility_Trend'] > 0.2),  # 波动率快速上升，看空
+            (self.data['Volatility_Rank'] > 0.6),
+            
+            # 温和看空：因子值适中负值
+            (self.data['Volatility_Factor'] < -0.1) & 
+            (self.data['Volatility_Factor'] >= -0.3),
         ]
-        choices = [1, 0.5, -1, -0.5]  # 满仓做多、半仓做多、满仓做空、半仓做空
+        choices = [1.0, 0.5, -1.0, -0.5]  # 满仓做多、半仓做多、满仓做空、半仓做空
         
         self.positions = np.select(conditions, choices, default=0)
         self.positions = pd.Series(self.positions, index=self.data.index).shift(1).fillna(0)
@@ -138,8 +137,8 @@ class Performance:
         cumulative = self.data['cumulative_returns']
         max_dd = (cumulative / cumulative.expanding().max() - 1).min()
         
-        excess_returns = strategy_returns - self.data['returns']
-        information_ratio = excess_returns.mean() / excess_returns.std() * np.sqrt(252) if excess_returns.std() != 0 else 0
+        # 修复：信息比率应该是策略收益的信息比率，而不是相对基准的主动收益
+        information_ratio = annual_return / annual_volatility if annual_volatility != 0 else 0
         
         win_rate = (strategy_returns > 0).sum() / len(strategy_returns) if len(strategy_returns) > 0 else 0
         
@@ -205,7 +204,7 @@ class Performance:
 
 def main():
     """主函数"""
-    data_path = 'code_1/300638_2024.pkl'
+    data_path = 'data/data_202410.pkl'
     
     data_handler = DataHandler(data_path)
     data_handler.calculate_volatility_factor()

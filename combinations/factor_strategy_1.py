@@ -193,7 +193,7 @@ class Performance:
 def main():
     """主函数"""
     # 数据路径
-    data_path = 'code_1/300638_2024.pkl'
+    data_path = 'data/data_202410.pkl'
     
     # 初始化数据处理器
     data_handler = DataHandler(data_path)

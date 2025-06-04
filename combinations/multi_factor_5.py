@@ -558,7 +558,7 @@ def run_multi_factor_5_strategy(data_path, combination_methods=None):
 def main():
     """主函数"""
     # 数据路径
-    data_path = 'code_1/300638_2024.pkl'
+    data_path = 'data/data_202410.pkl'
     
     try:
         # 运行5因子组合策略

@@ -65,7 +65,7 @@ def test_model_selection():
     
     try:
         # 添加模块路径
-        sys.path.insert(0, 'final_project/models')
+        sys.path.insert(0, 'models')
         
         from intelligent_model_selection import IntelligentModelSelection
         
@@ -160,10 +160,10 @@ def test_ensemble_models():
 def create_directories():
     """创建必要的目录"""
     directories = [
-        'final_project/models',
-        'final_project/results', 
-        'final_project/reports',
-        'final_project/logs'
+        'models',
+        'results', 
+        'reports',
+        'logs'
     ]
     
     for directory in directories:
@@ -199,27 +199,17 @@ def main():
     print("\n" + "=" * 50)
     print("测试结果汇总:")
     
-    passed_tests = sum(test_results)
-    total_tests = len(test_results)
-    
-    test_names = ["智能模型选择", "模型评估", "集成模型"]
-    
-    for i, (name, result) in enumerate(zip(test_names, test_results)):
-        status = "✓ 通过" if result else "✗ 失败"
-        print(f"  {name}: {status}")
-    
-    print(f"\n通过率: {passed_tests}/{total_tests} ({passed_tests/total_tests*100:.1f}%)")
-    
-    if passed_tests == total_tests:
-        print("\n🎉 所有测试通过！系统可以正常运行")
-        print("\n下一步:")
-        print("  1. 运行完整测试: python final_project/run_module3.py")
-        print("  2. 查看运行指南: final_project/models/模块三运行指南.md")
+    if all(test_results):
+        print("  状态: ✅ 所有测试通过")
+        print(f"  可选包可用: {available_optional}/5")
+        print("\n下一步操作:")
+        print("  1. 运行完整测试: python run_module3.py")
+        print("  2. 查看运行指南: models/模块三运行指南.md")
     else:
-        print(f"\n⚠️  {total_tests - passed_tests}个测试失败")
-        print("请检查错误信息并安装相应的依赖包")
+        print("  状态: ❌ 部分测试失败")
+        print("  请检查错误信息并修复问题")
     
-    return passed_tests == total_tests
+    return all(test_results)
 
 if __name__ == "__main__":
     success = main()

@@ -9,6 +9,7 @@ import subprocess
 import sys
 import os
 import locale
+from datetime import datetime
 
 def get_system_encoding():
     """获取系统编码"""
@@ -147,25 +148,28 @@ def main():
     
     if success_count >= len(required_packages):
         print("\n✅ 基础环境配置成功！")
-        print("🚀 现在可以运行: python final_project/run_module3.py")
+        print("🚀 现在可以运行: python run_module3.py")
+        
+        # 保存安装记录 
+        try:
+            with open("installed_packages.txt", "w", encoding='utf-8') as f:
+                f.write("已安装的Python包列表\n")
+                f.write("=" * 30 + "\n")
+                f.write(f"安装时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"成功安装: {success_count}个包\n")
+                f.write(f"失败: {total_count - success_count}个包\n\n")
+                
+                f.write("成功安装的包:\n")
+                for pkg in required_packages + optional_packages + advanced_packages:
+                    if check_package(pkg.replace('-', '_')):
+                        f.write(f"- {pkg}\n")
+        
+            print("📝 已安装包列表保存到: installed_packages.txt")
+        except Exception as e:
+            print(f"保存安装记录时出错: {e}")
     else:
         print("\n⚠️ 部分基础包安装失败")
         print("请手动安装失败的包或检查网络连接")
-    
-    # 创建简单的依赖文件
-    try:
-        with open("final_project/installed_packages.txt", "w", encoding='utf-8') as f:
-            f.write("# 已安装的包列表\n")
-            f.write(f"# 安装时间: {__import__('datetime').datetime.now()}\n\n")
-            
-            all_packages = required_packages + optional_packages + advanced_packages
-            for package in all_packages:
-                if check_package(package.replace('-', '_')):
-                    f.write(f"{package}\n")
-        
-        print("📝 已安装包列表保存到: final_project/installed_packages.txt")
-    except Exception as e:
-        print(f"⚠️ 保存包列表失败: {e}")
 
 if __name__ == "__main__":
     main()

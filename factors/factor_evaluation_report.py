@@ -12,10 +12,9 @@ class FactorEvaluator:
     用于批量评估所有单因子策略的表现
     """
     def __init__(self, data_path=None):
-        # 如果没有指定数据路径，则使用相对于项目根目录的路径
+        # 如果没有指定数据路径，则使用data目录中的数据
         if data_path is None:
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            self.data_path = os.path.join(project_root, '..', 'code_1', '300638_2024.pkl')
+            self.data_path = 'data/data_202410.pkl'
         else:
             self.data_path = data_path
         self.factor_strategies = {}
@@ -275,6 +274,9 @@ class FactorEvaluator:
         保存详细报告到Excel文件
         """
         try:
+            # 确保目录存在
+            os.makedirs('./factors/results', exist_ok=True)
+            
             # 准备详细数据
             detailed_data = []
             for _, row in ranking_df.iterrows():
@@ -294,7 +296,7 @@ class FactorEvaluator:
             # 创建DataFrame并保存
             report_df = pd.DataFrame(detailed_data)
             
-            filename = f'./factor_evaluation_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+            filename = f'./factors/results/factor_evaluation_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
             report_df.to_excel(filename, index=False, sheet_name='因子评估报告')
             
             print(f"\n详细报告已保存至: {filename}")
@@ -306,6 +308,9 @@ class FactorEvaluator:
         """
         绘制因子对比图表
         """
+        # 确保目录存在
+        os.makedirs('./factors/results', exist_ok=True)
+        
         plt.figure(figsize=(20, 12))
         plt.rcParams['font.sans-serif'] = ['SimHei']
         plt.rcParams['axes.unicode_minus'] = False
@@ -362,10 +367,11 @@ class FactorEvaluator:
         plt.grid(True, alpha=0.3)
         
         plt.tight_layout()
-        plt.savefig('./factor_comparison_charts.png', dpi=300, bbox_inches='tight')
+        # 修复：确保图表保存到正确的目录
+        plt.savefig('./factors/results/factor_comparison_charts.png', dpi=300, bbox_inches='tight')
         plt.close()
         
-        print("对比图表已保存至: ./factor_comparison_charts.png")
+        print("对比图表已保存至: ./factors/results/factor_comparison_charts.png")
 
 if __name__ == "__main__":
     print("开始因子策略批量评估...")

@@ -1,0 +1,18 @@
+{
+  "timeframe_config": {
+    "resample_rule": "1T",
+    "name": "分钟数据",
+    "min_periods": 1000,
+    "description": "1分钟K线数据，适合高频交易和短线策略"
+  },
+  "stock_code": "000012",
+  "data_shape": [
+    4114,
+    14
+  ],
+  "time_range": {
+    "start": "2024-10-08 09:30:00",
+    "end": "2024-10-30 15:00:00"
+  },
+  "created_at": "2025-06-04T12:12:44.152133"
+}

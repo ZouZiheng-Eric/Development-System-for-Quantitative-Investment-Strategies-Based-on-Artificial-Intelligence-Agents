@@ -1,4 +1,4 @@
- #!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 集成模型系统
@@ -39,7 +39,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('final_project/logs/ensemble_models.log'),
+        logging.FileHandler('logs/ensemble_models.log'),
         logging.StreamHandler()
     ]
 )
@@ -508,7 +508,7 @@ class EnsembleModelManager:
         
         return summary_df
     
-    def plot_performance_comparison(self, save_path='final_project/results/'):
+    def plot_performance_comparison(self, save_path='results/'):
         """绘制性能对比图"""
         if not self.results:
             logger.warning("没有结果数据用于绘图")
@@ -561,7 +561,7 @@ class EnsembleModelManager:
         
         logger.info(f"性能对比图已保存: {filename}")
     
-    def save_best_model(self, save_path='final_project/models/'):
+    def save_best_model(self, save_path='models/'):
         """保存最佳模型"""
         if not self.results:
             logger.warning("没有结果数据")
